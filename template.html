@@ -6,31 +6,123 @@
         <!--Style tag here because no includes-->
 
         <style>
+        @import url('https://fonts.googleapis.com/css?family=Roboto');
+        html,
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Robot, sans;
+            color: rgba(0,0,0,0.75);
+            font-size: 14pt;
+        }
         .row {
             display: flex;
             flex-direction: row;
+            min-height: 100vh;
         }
-        .row:first-child.col {
-            width: 30%;
-            padding: 1em;
+        .row .sidebar {
+            width: 15%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            padding: 2em;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         }
-        .row:not(:first-child) {
-            padding: calc(30vw - 30%);
+        .row .col {
+            padding-left: 30%;
+            padding-right: 15%;
         }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: 400;
+        }
+
+        h1 {
+            font-size: 48;
+        }
+        h2 {
+            font-size: 36;
+        }
+        h3 {
+            font-size: 24;
+        }
+
+
+        hr {
+            transform: translateY(-.75em);
+        }
+
+        a,
+        a:active,
+        a:enabled,
+        a:visited,
+        a:focus {
+            color: inherit;
+            text-decoration-color: rgba(0,0,0,0.35);
+        }
+
+        a:active,
+        a:hover {
+            text-decoration-color: #000;
+        }
+
+        #theme {
+            position: fixed;
+            top: 1em;
+            right: 1em;
+            background: rgba(200, 200, 200, 0.2);
+            border: none;
+        }
+
+        .dark * {
+            color: rgba(255, 255, 255, .8);
+            background: #1c1e26;
+        }
+
+        .dark .sidebar,
+        .dark .sidebar * {
+            background: #15171e;
+        }
+
+        .dark a,
+        .dark a:active,
+        .dark a:enabled,
+        .dark a:visited,
+        .dark a:focus {
+            color: inherit;
+            text-decoration-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .dark a:active,
+        .dark a:hover {
+            text-decoration-color: #fff;
+        }
+
         </style>
 
     </head>
-    <body>
+    <body id="body">
+        <button onclick="toggletheme()" id="theme">Theme</button>
         <div class="row">
-            <div class="col">
+            <div class="sidebar">
                 <h2>{{title}}</h2>
                 <br>
 
                 <h3>Pages:</h3>
-                <br>
+                <hr>
+
+                {% for page in pages %}
+                    <a href="{{ page['href'] }}">{{ page['name'] }}</a>
+                    <br>
+                {% endfor %}
 
                 <h3>Sections:</h3>
-                <br>
+                <hr>
+
                 {% for link in links %}
                     <a href="{{ link['href'] }}">{{ link['name'] }}</a>
                     <br>
@@ -40,5 +132,16 @@
                 {{docc}}
             </div>
         </div>
+
+        <script>
+            function toggletheme() {
+                let $body = document.getElementById("body");
+                if ( $body.classList.contains("dark") ) {
+                    $body.classList.remove("dark");
+                } else {
+                    $body.classList.add("dark");
+                }
+            }
+        </script>
     </body>
 </html>

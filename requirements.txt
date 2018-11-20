@@ -1,3 +1,4 @@
 markdown
 beautifulsoup4
 jinja2
+toml

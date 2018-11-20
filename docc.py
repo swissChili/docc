@@ -6,6 +6,7 @@ import os
 from markdown import markdown
 from bs4 import BeautifulSoup
 import jinja2
+import toml
 
 def read(f):
     with open(f, "r") as f_:
@@ -28,15 +29,21 @@ def sluggify(string):
     string = str(string).lower()
     return "-".join(string.split(" "))
 
-def compile_markdown(files, template="template.html", title="Docc"):
-    if not os.path.exists("dist"):
-        os.makedirs("dist")
+def prettify(string):
+    string = string.split("-")
+    string = [ word[0].upper() + word[1:] for word in string ]
+    return ' '.join(string)
+
+def compile_markdown(files, template="template.html", title="Docc", output="dist"):
+    if not os.path.exists(output):
+        os.makedirs(output)
     for html, md in files.items():
         comp = BeautifulSoup(markdown(read(md)), features="html.parser")
 
         headers = comp.find_all("h1")
 
         links = []
+        pages = []
 
         for h in headers:
             href = "bookmark-" + sluggify(h.string)
@@ -46,18 +53,43 @@ def compile_markdown(files, template="template.html", title="Docc"):
                 "name": h.string
             })
 
-        write(os.path.join("dist", html),parse_template(template).render(docc = comp, title=title, links=links))
+        for page, source in files.items():
+            if not page == html:
+                pages.append({
+                    "href": page,
+                    "name": prettify("-".join(page.split(".")[:-1]))
+                })
+
+        write(os.path.join(output, html),parse_template(template).render(docc = comp, 
+                                                                         title=title, 
+                                                                         links=links,
+                                                                         pages=pages))
+    print("Successfully compiled {} files".format(len(files)))
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        paths = []
-        for path, dirs, files in os.walk(sys.argv[1]):
-            for f in files:
-                if f.endswith(".md") or f.endswith(".markdown"):
-                    paths.append(os.path.join(path, f))
-        # This is why I like python
-        # I'm gonna hate myself when I have to fix this garbage fire
-        files = { (html if not html.startswith("./") else html[2:]) : (md if not md.startswith("./") else md[2:]) for html, md in { '.'.join(path.split('.')[:-1]) + ".html" : path for path in paths }.items() }
-        compile_markdown(files, title="Docc Example")
+        walk_dir = sys.argv[1]
     else:
-        print("No path specified. Please specify a path to use docc")
+        walk_dir = "."
+
+    config = {
+        "title": "Docc",
+        "out": "dist",
+        "ignore": [],
+        "template": "/etc/docc/template.html"
+    }
+
+    if os.path.exists("docc.toml"):
+        for key, val in toml.loads(read("docc.toml")).items():
+            config[key] = val
+        print("Using config found at docc.toml")
+
+    paths = []
+    for path, dirs, files in os.walk(walk_dir):
+        for f in files:
+            if ( f.endswith(".md") or f.endswith(".markdown") ) and not f in config["ignore"]:
+                paths.append(os.path.join(path, f))
+    # This is why I like python
+    # I'm gonna hate myself when I have to fix this garbage fire
+    files = { (html if not html.startswith("./") else html[2:]) : (md if not md.startswith("./") else md[2:]) for html, md in { '.'.join(path.split('.')[:-1]) + ".html" : path for path in paths }.items() }
+    compile_markdown(files, template=config["template"], title="Docc Example", output=config["out"])

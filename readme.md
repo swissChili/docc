@@ -1,0 +1,1 @@
+# Docc -- A simple MarkDown documentation generator

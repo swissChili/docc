@@ -1,0 +1,3 @@
+title = "Docc Example"
+out = "dist"
+template = "template.html"

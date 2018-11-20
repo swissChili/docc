@@ -1,9 +1,17 @@
-# Getting Started
-Some useful information on how to get started
+# A Header
 
-```A code blocc```
+Some Useful information
 
-# Another Thing
 
-### H3!!
-E
+## A smaller header
+
+```
+A code block 
+```
+
+# another header
+more stuff
+
+# yet another header
+
+even more stuff
