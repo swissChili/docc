@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{{title}}</title>
+
+        <!--Style tag here because no includes-->
+
+        <style>
+        .row {
+            display: flex;
+            flex-direction: row;
+        }
+        .row:first-child.col {
+            width: 30%;
+            padding: 1em;
+        }
+        .row:not(:first-child) {
+            padding: calc(30vw - 30%);
+        }
+        </style>
+
+    </head>
+    <body>
+        <div class="row">
+            <div class="col">
+                <h2>{{title}}</h2>
+                <br>
+
+                <h3>Pages:</h3>
+                <br>
+
+                <h3>Sections:</h3>
+                <br>
+                {% for link in links %}
+                    <a href="{{ link['href'] }}">{{ link['name'] }}</a>
+                    <br>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {{docc}}
+            </div>
+        </div>
+    </body>
+</html>
